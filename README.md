@@ -1,4 +1,74 @@
-# Operator Learning for Nonlinear Diffusion Problems
+# 非线性辐射扩散问题的算子学习
+
+## 算子学习方法：
+
+Fourier神经算子（FNO）与深度算子网络（DON）作为近年来科学机器学习的前沿方法，在复杂偏微分方程的高效求解中展现了突破性潜力。FNO通过频域全局卷积核捕捉物理场的多尺度特征，DON则通过分离分支-主干网络架构实现从函数空间到解空间的直接映射，二者结合为高维非线性问题的快速建模提供了新范式。然而，现有研究多聚焦于简单线性或弱非线性场景，针对强非线性、多场耦合的辐射扩散问题，如何有效融合FNO的频域优势与DON的算子学习框架，仍是亟待突破的挑战。
+
+本文提出两种创新架构——Type-1 Fourier-DON与Type-2 Fourier-DON，将频域算子学习引入二维非线性辐射扩散建模。Type-1通过FNO生成基函数与DON系数学习的线性组合实现解空间重构，兼具物理可解释性；Type-2则通过特征空间张量积与FNO解码器的非线性映射，突破传统基展开的局限性，显著提升对解场突变特征的捕捉能力。两种架构均摒弃传统时间步进与Picard迭代，直接建立从材料属性、边界条件到目标时刻解的端到端映射，在求解非线性辐射扩散问题的过程中实现计算效率的跨越式提升。
+
+## 非线性辐射扩散问题：
+
+非线性辐射扩散问题是一类典型的多尺度强耦合输运方程，其核心在于描述辐射能量与物质能量通过光子输运产生的非线性能量交换过程。该过程的控制方程可表述为：
+
+### 单温问题：
+
+$$
+\begin{aligned}
+   & \frac{\partial E}{\partial t}-\nabla\cdot(D_L\nabla E) = 0, \quad(x,y,t)\in\Omega\times[0,1] \\
+   & 0.5E+D_L\nabla E\cdot n = \beta(x,y,t), \quad(x,y,t)\in\lbrace x=0\rbrace\times[0,1] \\
+   & 0.5E+D_L\nabla E\cdot n = 0, \quad(x,y,t)\in\partial\Omega\setminus\lbrace x=0\rbrace\times[0,1] \\
+   & E|_{t=0} = g(x,y,0)
+\end{aligned}
+$$
+
+其中 $\Omega = [0,1]\times[0,1]$ ；辐射扩散系数 $D_L$ 选用限流形式，即 $D_L = \frac{1}{3\sigma_{\alpha}+\frac{|\nabla E|}{E}}, \sigma_{\alpha} = \frac{z^3}{E^{3/4}}$ 。
+
+### 双温问题：
+
+$$
+\begin{aligned}
+   & \frac{\partial E}{\partial t} - \nabla \cdot (D_L \nabla E) = \sigma_{\alpha}(T^4 - E), \quad(x,y,t)\in\Omega\times[0,1] \\
+   & \frac{\partial T}{\partial t} - \nabla \cdot (K_L \nabla T) = \sigma_{\alpha}(E - T^4), \quad(x,y,t)\in\Omega\times[0,1] \\
+   & 0.5E + D_L \nabla E \cdot n = \beta(x,y,t), \quad (x,y,t) \in \lbrace x=0 \rbrace \times [0,1] \\
+   & 0.5E + D_L \nabla E \cdot n = 0, \quad (x,y,t) \in \partial\Omega \setminus \lbrace x=0 \rbrace \times [0,1] \\
+   & K_L \nabla T \cdot n = 0, \quad (x,y,t) \in \partial\Omega \times [0,1] \\
+   & E\vert_{t=0} = g(x,y,0) \\
+   & T^4\vert_{t=0} = g(x,y,0)
+\end{aligned}
+$$
+
+其中 $\Omega = [0,1]\times[0,1]$ ；辐射扩散系数 $D_L, K_L$ 同样选用限流形式，即 $D_L = \frac{1}{3\sigma_{\alpha}+\frac{|\nabla E|}{E}}, \sigma_{\alpha} = \frac{z^3}{E^{3/4}}, K_L = \frac{T^4}{T^{3/2}z+T^{5/2}|\nabla T|}$ 。
+
+对于上述单温、双温问题，电离度函数采用双方形，当 $\frac{3}{16}<x<\frac{7}{16}, \frac{9}{16}<y<\frac{13}{16}$ 或 $\frac{9}{16}<x<\frac{13}{16}, \frac{3}{16}<y<\frac{7}{16}$ 时， $z=10$ ；其他时候 $z=1$ 。初边值条件采用常数初值+线性边值： $\beta (x,y,t) = \max$ { $20t, 10$ }, $\quad g(x,y,t) = 0.01$ 。
+
+### 算子学习问题：
+
+需要研究的算子问题如下：
+
+| Case               | Tasks                          |
+|--------------------|--------------------------------|
+| single-temperature | \( Z \rightarrow E \)          |
+|                    | \( Z \times t_1 \rightarrow E \) |
+|                    | \( Z \times t_1 \times \beta_{\text{max}} \rightarrow E \) |
+| two-temperature    | \( Z \rightarrow E, T \)       |
+|                    | \( Z \times t_1 \rightarrow E, T \) |
+|                    | \( Z \times t_1 \times \beta_{\text{max}} \rightarrow E, T \) |
+
+## 算子学习算法设计：
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Operator Learning for Nonlinear Radiation Diffusion Problems
 
 This repository contains scripts to reproduce the results from the paper on operator learning for solving nonlinear diffusion problems. Follow the instructions below to set up the project, run experiments, and process results.
 
